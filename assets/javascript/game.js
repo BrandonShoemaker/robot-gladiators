@@ -7,14 +7,17 @@ while(repeat){
     var playerHealth = 100;
     var playerAttack = 10;
     var playerMoney = 10;
+    var playerAlive = true;
 
     //initializes attacker
     var attackerNames = ["Roberto", "Bender", "C3-P0"];
     //commences fight
     for(var i=0; i<3; i++){
+        if(!playerAlive) break;
         var attackerHealth = 50;
         var attackerAttack = 12;
-        fight(attackerNames[i]);
+        window.alert("Welcome to the robot gladitorial arena!\n\nRound " + (i+1) + " of " + attackerNames.length + "!\n\nFight!");
+        fight(attackerNames[i], i+1, attackerNames.length);
     }
     //propmpt user for repeat answer
     repeat = window.confirm("Another round?!");
@@ -23,7 +26,6 @@ while(repeat){
 window.close();
 
 function fight(attacker){
-    window.alert("Welcome to the robot gladitorial arena!");
     //Subtract the value of `playerAttack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
     while(attackerHealth > 0 && playerHealth > 0){
         //defaults to let them pick their answer
@@ -46,13 +48,15 @@ function fight(attacker){
         }
         skip = skip.toLowerCase();
         if(skip === "s" || skip === "skip"){
-            var confirm = window.prompt("Are you sure you want to skip? There will be a 2 gold penaly. (Yes or y for yes, anything else for no): ");
-            confirm = confirm.toLowerCase();
-            if(confirm === "yes" || confirm === "y"){
-                window.alert("You have chosen to skip this fight!");
-                playerMoney -= 2;
-                continue;
+            var confirm = window.confirm("Are you sure you want to skip? There will be a 10 gold penalty.");
+            if(playerMoney <= 0) window.alert("You have no money to left!\n\nBack to the fight with you, Pit Dog!")
+            else if(confirm){
+                        window.alert("You have chosen to skip this fight!");
+                        playerMoney -= 10;
+                        window.alert("You lost 10 gold!");
+                        continue;
             }
+            
             attack(attacker);
         }
         else{
@@ -61,8 +65,11 @@ function fight(attacker){
     }
     if(playerHealth > 0){
         window.alert(playerName + " Wins!");
+        playerMoney += 20;
+        window.alert("You gained 20 gold!");
     } else{
         window.alert("You Lose!");
+        playerAlive = false;
     }
 }
 
