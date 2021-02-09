@@ -9,19 +9,20 @@ while(repeat){
     var playerMoney = 10;
 
     //initializes attacker
-    var attacker = "Roberto";
-    var attackerHealth = 50;
-    var attackerAttack = 12;
-
+    var attackerNames = ["Roberto", "Bender", "C3-P0"];
     //commences fight
-    fight();
+    for(var i=0; i<3; i++){
+        var attackerHealth = 50;
+        var attackerAttack = 12;
+        fight(attackerNames[i]);
+    }
     //propmpt user for repeat answer
     repeat = window.confirm("Another round?!");
 }
 //supposed to close tab but doesnt
 window.close();
 
-function fight(){
+function fight(attacker){
     window.alert("Welcome to the robot gladitorial arena!");
     //Subtract the value of `playerAttack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
     while(attackerHealth > 0 && playerHealth > 0){
@@ -45,16 +46,17 @@ function fight(){
         }
         skip = skip.toLowerCase();
         if(skip === "s" || skip === "skip"){
-            var confirm = window.confirm("Are you sure you want to skip? There will be a 2 gold penaly.");
-            if(confirm){
+            var confirm = window.prompt("Are you sure you want to skip? There will be a 2 gold penaly. (Yes or y for yes, anything else for no): ");
+            confirm = confirm.toLowerCase();
+            if(confirm === "yes" || confirm === "y"){
                 window.alert("You have chosen to skip this fight!");
                 playerMoney -= 2;
                 continue;
             }
-            attack();
+            attack(attacker);
         }
         else{
-            attack();
+            attack(attacker);
         }
     }
     if(playerHealth > 0){
@@ -65,7 +67,7 @@ function fight(){
 }
 
 //employing DRY
-function attack(){
+function attack(attacker){
     attackerHealth -= playerAttack;
     // Log a resulting message to the console so we know that it worked.
     window.alert(attacker + "'s Health: " + attackerHealth + ", decreased by " + playerAttack + " from " + (attackerHealth+playerAttack));
