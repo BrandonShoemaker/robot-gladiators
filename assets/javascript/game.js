@@ -1,31 +1,67 @@
-var repeat = true;
-//asks whether or not you want to play again
-while(repeat){
-    //initializes player
+
+function startGame(){
     var playerName = window.prompt("Name your gladiator!", "");
     console.log(playerName);
+    var attackerNames = ["Roberto", "Bender", "C3-P0"];
     var playerHealth = 100;
     var playerAttack = 10;
     var playerMoney = 10;
     var playerAlive = true;
-
-    //initializes attacker
-    var attackerNames = ["Roberto", "Bender", "C3-P0"];
+    var shopChoice = 1;
     //commences fight
-    for(var i=0; i<3; i++){
+    for(var i=0; i<attackerNames.length; i++){
         if(!playerAlive) break;
+        shopChoice = 1;
+        if(i>0){
+            while(shopChoice != "3"){
+                shopChoice = window.prompt("Welcome to the shop, You can 1.Refill: 10 gold, 2.Upgrade: 20 gold, 3.Leave\n\nYour gold: "+ playerMoney +"\n\nEnter 1, 2, or 3:");
+                while(shopChoice != 1 && shopChoice != 2 && shopChoice != 3) shopChoice = window.prompt("ERROR: Invalid selection, your selection, " + shopChoice + ". Acceptable selections are 1, 2, 3.\n\nWelcome to the shop, You can 1.Refill: 10 gold, 2.Upgrade: 20 gold, 3.Leave\n\nYour gold: "+ playerMoney +"\n\nEnter 1, 2, or 3:");
+                switch(shopChoice){
+                    case "1":     if(playerMoney <10){
+                                    window.alert("You don't have enough money for this. Continuing to the next match.\n\nGood luck, Pit Dog");
+                                    shopChoice = "3";
+                                    break;
+                                }
+                                if((playerHealth += 30) > 100) playerHealth = 100;
+                                else playerHealth +=30;
+                                playerMoney -= 10;
+                                break;
+                    
+                    case "2":     
+                                if(playerMoney <20){
+                                    if(playerMoney <10){
+                                        window.alert("You don't have enough money for this. Continuing to the next match.\n\nGood luck, Pit Dog");
+                                        shopChoice = "3";
+                                        break;
+                                    }
+                                    window.alert("You don't have enough money for this.\n\nGood luck, Pit Dog");
+                                    break;
+
+                                }
+                                playerAttack += 3;
+                                playerMoney -= 20;
+                    
+                    default:     break;
+                }
+            }
+            
+        }
         var attackerHealth = 50;
         var attackerAttack = 12;
         window.alert("Welcome to the robot gladitorial arena!\n\nRound " + (i+1) + " of " + attackerNames.length + "!\n\nFight!");
-        fight(attackerNames[i], i+1, attackerNames.length);
+        var playerStats = fight(attackerNames[i], attackerHealth, attackerAttack, playerAlive, playerAttack, playerHealth, playerName, playerMoney);
+        playerHealth = playerStats[0];
+        attackerAttack = playerStats[1];
+        playerMoney = playerStats[2];
+        playerAlive = playerStats[3];
     }
-    //propmpt user for repeat answer
-    repeat = window.confirm("Another round?!");
+    if(i == attackerNames.length && playerAlive == true) window.alert("Congratulations, Grand Champion of The Arena!!!");
+    var repeat = window.confirm("Play again?!");
+    if(repeat) startGame();
 }
-//supposed to close tab but doesnt
-window.close();
 
-function fight(attacker){
+function fight(attacker, attackerHealth, attackerAttack, playerAlive, playerAttack, playerHealth, playerName, playerMoney){
+    var healths;
     //Subtract the value of `playerAttack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
     while(attackerHealth > 0 && playerHealth > 0){
         //defaults to let them pick their answer
@@ -57,37 +93,48 @@ function fight(attacker){
                         continue;
             }
             
-            attack(attacker);
+            healths = attack(attacker, attackerAttack, attackerHealth, playerHealth, playerName, playerAttack);
+            attackerHealth = healths[0];
+            playerHealth = healths[1];
         }
         else{
-            attack(attacker);
+            healths = attack(attacker, attackerAttack, attackerHealth, playerHealth, playerName, playerAttack);
+            attackerHealth = healths[0];
+            playerHealth = healths[1];
         }
     }
     if(playerHealth > 0){
         window.alert(playerName + " Wins!");
         playerMoney += 20;
         window.alert("You gained 20 gold!");
+        return [playerHealth, playerAttack, playerMoney, playerAlive];
     } else{
         window.alert("You Lose!");
         playerAlive = false;
+        return [playerHealth, playerAttack, playerMoney, playerAlive];
     }
 }
 
 //employing DRY
-function attack(attacker){
-    attackerHealth -= playerAttack;
+function attack(attacker, attackerAttack, attackerHealth, playerHealth, playerName, playerAttack){
+    if((attackerHealth-playerAttack) < 0) attackerHealth = 0;
+    else attackerHealth -= playerAttack;
     // Log a resulting message to the console so we know that it worked.
     window.alert(attacker + "'s Health: " + attackerHealth + ", decreased by " + playerAttack + " from " + (attackerHealth+playerAttack));
     if(attackerHealth === 0){
         window.alert(attacker + " has died!");
         //kills while loop
-        return;
+        return [attackerHealth, playerHealth];
     }
     // Subtract the value of `enemyAttack` from the value of `playerHealth` and use that result to update the value in the `playerHealth` variable.
-    playerHealth -= attackerAttack;
+    if((playerHealth-attackerAttack) < 0) playerHealth = 0;
+    else playerHealth -= attackerAttack;
     // Log a resulting message to the console so we know that it worked.
     window.alert(playerName + "'s Health: " + playerHealth + ", decreased by " + attackerAttack + " from " + (playerHealth+attackerAttack));
     if(playerHealth === 0){
         window.alert(playerName + " has died!");
-    }
+   }
+   return [attackerHealth, playerHealth];
 }
+
+startGame();
