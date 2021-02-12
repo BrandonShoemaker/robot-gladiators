@@ -53,7 +53,7 @@ function startGame(){
     var shopChoice;
     var playerStats;
 
-    while(repeat && player.name !== undefined){
+    while(repeat && player.name !== undefined && player.name !== null){
         player.reset();
         shopChoice = 1;
         //commences fight
@@ -94,6 +94,10 @@ function startGame(){
 
 function fight(attackers, player){
     var healths;
+    var isPlayerTurn;
+    if(Math.random() > .5) isPlayerTurn = true;
+    else isPlayerTurn = false;
+
     //Subtract the value of `player.attack` from the value of `enemyHealth` and use that result to update the value in the `enemyHealth` variable
     while(attackers.health > 0 && player.health > 0){
         //defaults to let them pick their answer
@@ -124,15 +128,14 @@ function fight(attackers, player){
                         window.alert("You lost 10 gold!");
                         continue;
             }
-            
-            healths = attack(attackers, player);
-            attackers = healths[0];
-            player = healths[1];
+        }
+        if(isPlayerTurn){
+            attackers = attackEnemy(attackers, player);
+            player = attackPlayer(attackers, player);
         }
         else{
-            healths = attack(attackers, player);
-            attackers = healths[0];
-            player = healths[1];
+            player = attackPlayer(attackers, player);
+            attackers = attackEnemy(attackers, player);
         }
     }
     if(player.health > 0){
@@ -148,7 +151,8 @@ function fight(attackers, player){
 }
 
 //employing DRY
-function attack(attackers, player){
+function attackEnemy(attackers, player){
+
     if((attackers.health-player.attack) < 0) attackers.health = 0;
     else {
         var damage = randomNumber(player.attack-3, player.attack);
@@ -159,8 +163,12 @@ function attack(attackers, player){
     if(attackers.health === 0){
         window.alert(attackers.name + " has died!");
         //kills while loop
-        return [attackers, player];
+        return attackers;
     }
+    return attackers;
+}
+
+function attackPlayer(attackers, player){
     // Subtract the value of `enemyAttack` from the value of `player.health` and use that result to update the value in the `player.health` variable.
     if((player.health-attackers.attack) < 0) player.health = 0;
     else {
@@ -172,7 +180,7 @@ function attack(attackers, player){
     if(player.health === 0){
         window.alert(player.name + " has died!");
    }
-   return [attackers, player];
+   return player;
 }
 
 function randomNumber(min, max){
@@ -180,10 +188,11 @@ function randomNumber(min, max){
 }
 
 function getPlayerName(){
-    this.name = window.prompt("Name your gladiator!");
-    while(this.name === ""){
-        this.name = window.prompt("ERROR: You must enter at least one character for your name to be valid.\n\nName your gladiator!");
+    var name = window.prompt("Name your gladiator!");
+    while(name === ""){
+        name = window.prompt("ERROR: You must enter at least one character for your name to be valid.\n\nName your gladiator!");
     }
+    return name;
 }
 
 startGame();
