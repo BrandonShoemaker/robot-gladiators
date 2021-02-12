@@ -3,11 +3,13 @@ function startGame(){
     var playerName = window.prompt("Name your gladiator!", "");
     console.log(playerName);
     var attackerNames = ["Roberto", "Bender", "C3-P0"];
-    var playerHealth = 100;
-    var playerAttack = 10;
+    var playerHealth = randomNumber(70, 110);
+    var playerAttack = randomNumber(8, 13);
     var playerMoney = 10;
     var playerAlive = true;
     var shopChoice = 1;
+    var attackerHealth = randomNumber(40, 70);
+    var attackerAttack = randomNumber(10, 15);
     //commences fight
     for(var i=0; i<attackerNames.length; i++){
         if(!playerAlive) break;
@@ -46,8 +48,6 @@ function startGame(){
             }
             
         }
-        var attackerHealth = 50;
-        var attackerAttack = 12;
         window.alert("Welcome to the robot gladitorial arena!\n\nRound " + (i+1) + " of " + attackerNames.length + "!\n\nFight!");
         var playerStats = fight(attackerNames[i], attackerHealth, attackerAttack, playerAlive, playerAttack, playerHealth, playerName, playerMoney);
         playerHealth = playerStats[0];
@@ -118,7 +118,10 @@ function fight(attacker, attackerHealth, attackerAttack, playerAlive, playerAtta
 //employing DRY
 function attack(attacker, attackerAttack, attackerHealth, playerHealth, playerName, playerAttack){
     if((attackerHealth-playerAttack) < 0) attackerHealth = 0;
-    else attackerHealth -= playerAttack;
+    else {
+        var damage = randomNumber(playerAttack-3, playerAttack);
+        attackerHealth -= Math.max(0, damage);
+    }
     // Log a resulting message to the console so we know that it worked.
     window.alert(attacker + "'s Health: " + attackerHealth + ", decreased by " + playerAttack + " from " + (attackerHealth+playerAttack));
     if(attackerHealth === 0){
@@ -128,13 +131,20 @@ function attack(attacker, attackerAttack, attackerHealth, playerHealth, playerNa
     }
     // Subtract the value of `enemyAttack` from the value of `playerHealth` and use that result to update the value in the `playerHealth` variable.
     if((playerHealth-attackerAttack) < 0) playerHealth = 0;
-    else playerHealth -= attackerAttack;
+    else {
+        var damage = randomNumber(attackerAttack-3, attackerAttack);
+        playerHealth -= Math.max(0, damage);
+    }
     // Log a resulting message to the console so we know that it worked.
     window.alert(playerName + "'s Health: " + playerHealth + ", decreased by " + attackerAttack + " from " + (playerHealth+attackerAttack));
     if(playerHealth === 0){
         window.alert(playerName + " has died!");
    }
    return [attackerHealth, playerHealth];
+}
+
+function randomNumber(min, max){
+    return Math.floor(Math.random()*(max-min+1))+min;
 }
 
 startGame();
