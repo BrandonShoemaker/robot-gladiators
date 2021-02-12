@@ -2,7 +2,7 @@
 function startGame(){
     var repeat = true;
     var player = {
-        name: window.prompt("Name your gladiator!"),
+        name: getPlayerName(),
         health: randomNumber(70, 110),
         attack: randomNumber(8, 13),
         money: 10,
@@ -53,7 +53,7 @@ function startGame(){
     var shopChoice;
     var playerStats;
 
-    while(repeat){
+    while(repeat && player.name !== undefined){
         player.reset();
         shopChoice = 1;
         //commences fight
@@ -177,6 +177,13 @@ function attack(attackers, player){
 
 function randomNumber(min, max){
     return Math.floor(Math.random()*(max-min+1))+min;
+}
+
+function getPlayerName(){
+    this.name = window.prompt("Name your gladiator!");
+    while(this.name === ""){
+        this.name = window.prompt("ERROR: You must enter at least one character for your name to be valid.\n\nName your gladiator!");
+    }
 }
 
 startGame();
