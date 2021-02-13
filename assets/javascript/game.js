@@ -1,6 +1,7 @@
 
 function startGame(){
     var repeat = true;
+    var highscore;
     var player = {
         name: getPlayerName(),
         health: randomNumber(70, 110),
@@ -19,13 +20,13 @@ function startGame(){
                 shopChoice = "3";
                 return;
             }
-            if((this.health += 20) > 100) {
+            if((this.health + 20) > 100) {
                 this.health = 100;
                 this.money -=10;
             }
             else {
                 //does 2 +20's for some reason, don't know why, reducing to 10 to acheive outcome of healing of 20
-                this.health += 10;
+                this.health += 20;
                 this.money -= 10;
             }
         },
@@ -40,7 +41,7 @@ function startGame(){
                 return;
 
             }
-            this.attack +=3;
+            this.attack += 3;
             this.money -= 20;
         }
     };
@@ -88,6 +89,15 @@ function startGame(){
             player = playerStats;
         }
         if(i == names.length && player.alive == true) window.alert("Congratulations, Grand Champion of The Arena!!!");
+        highscore = localStorage.getItem("highscore");
+        //short circuit conditional statement
+        highscore = highscore || 0;
+        if(player.money > highscore){
+            localStorage.setItem("highscore", player.money);
+            localStorage.setItem("Name",player.name)
+            window.alert("Congradulations champion, you set a new high score! " + player.money + "Gold!");
+        }
+        else window.alert("Better luck next time, champion. Your Gold: " + player.money);
         repeat = window.confirm("Play again?!");
     }
 }
@@ -131,10 +141,12 @@ function fight(attackers, player){
         }
         if(isPlayerTurn){
             attackers = attackEnemy(attackers, player);
+            if(attackers.health === 0) continue;
             player = attackPlayer(attackers, player);
         }
         else{
             player = attackPlayer(attackers, player);
+            if(player.alive === 0) continue;
             attackers = attackEnemy(attackers, player);
         }
     }
